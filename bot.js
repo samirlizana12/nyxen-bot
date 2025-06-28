@@ -273,4 +273,5 @@ client.once('ready', () => {
   cargarElo();
 });
 
-client.login('MTM3Njk3MTY5ODA4NzEzMzIwNA.G2HyTK.GYGUW1VLOMFnXyQ8ioX-hn6B3RDjnkvWRB9aGY');
+client.login(process.env.TOKEN);
+
