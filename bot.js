@@ -46,13 +46,22 @@ client.on('messageCreate', async message => {
 
   if (['1v1', '2v2', '3v3'].includes(message.channel.name)) {
   if (comando === 'j') {
-    const modo = message.channel.name;
-    if (colas[modo].includes(message.author.id)) {
-      return enviarEmbed(message.channel, '⚠️ Ya estás en cola', `<@${message.author.id}> ya está en la cola de ${modo}.`);
-    }
+  const modo = message.channel.name;
+  if (colas[modo].includes(message.author.id)) {
+    return enviarEmbed(message.channel, '⚠️ Ya estás en cola', `<@${message.author.id}> ya está en la cola de ${modo}.`);
+  }
 
-    colas[modo].push(message.author.id);
-    enviarEmbed(message.channel, '✅ Nuevo jugador', `<@${message.author.id}> se ha unido a la cola de ${modo}.`);
+  // Asegurar que tenga ELO guardado
+  if (!elo[message.author.id]) {
+    elo[message.author.id] = 1000;
+    guardarElo();
+  }
+
+  colas[modo].push(message.author.id);
+  enviarEmbed(message.channel, '✅ Nuevo jugador', `<@${message.author.id}> se ha unido a la cola de ${modo}.`);
+
+  // (y luego continúa como ya lo tienes)
+
 
     const requeridos = modo === '1v1' ? 2 : modo === '2v2' ? 4 : 6;
     if (colas[modo].length >= requeridos) {
