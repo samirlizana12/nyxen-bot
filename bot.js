@@ -348,6 +348,18 @@ if (comando === 'r') {
   }
 });
 
+const express = require("express");
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("Bot Nyxen activo.");
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor web activo en el puerto ${PORT}`);
+});
+
 
 client.once('ready', () => {
   console.log(`🤖 Bot conectado como ${client.user.tag}`);
