@@ -3,7 +3,7 @@
 const { Client, GatewayIntentBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const fs = require('fs');
 const crearSala = require('./crearSala');
-const { cargarElo, guardarElo, obtenerElo, actualizarNombre, estadisticas, actualizarStats } = require('./elo');
+const { cargarElo, guardarElo, obtenerElo, actualizarNombre, estadisticas, actualizarStats, elo } = require('./elo');
 const { delay, formatearNombre, obtenerJugadoresOrdenados } = require('./util');
 
 const client = new Client({
