@@ -41,6 +41,34 @@ client.on('messageCreate', async message => {
   if (!message.content.startsWith(PREFIX) || message.author.bot) return;
   const [comando, ...args] = message.content.slice(PREFIX.length).trim().split(/\s+/);
 
+  if (['1v1', '2v2', '3v3'].includes(message.channel.name)) {
+  if (comando === 'j') {
+    const modo = message.channel.name;
+    if (colas[modo].includes(message.author.id)) {
+      return enviarEmbed(message.channel, '⚠️ Ya estás en cola', `<@${message.author.id}> ya está en la cola de ${modo}.`);
+    }
+
+    colas[modo].push(message.author.id);
+    enviarEmbed(message.channel, '✅ Nuevo jugador', `<@${message.author.id}> se ha unido a la cola de ${modo}.`);
+
+    const requeridos = modo === '1v1' ? 2 : modo === '2v2' ? 4 : 6;
+    if (colas[modo].length >= requeridos) {
+      const jugadores = colas[modo].splice(0, requeridos);
+      partidas.push({ id: partidaId, modo, jugadores });
+      fs.writeFileSync('partidaId.json', `${++partidaId}`);
+      const link = await crearSala(modo);
+      partidas[partidas.length - 1].link = link;
+
+      jugadores.forEach(uid => {
+        client.users.send(uid, `🎮 Sala ${modo} (Partida #${partidaId - 1}): ${link}`);
+      });
+
+      enviarEmbed(message.channel, '🔥 Partida iniciada', `Modo: ${modo}\nJugadores: ${jugadores.map(id => `<@${id}>`).join(', ')}\n🔗 Link: ${link}`);
+    }
+  }
+}
+
+
   // =l -> tu ELO
   if (comando === 'l') {
     const puntos = obtenerElo(message.author.id) || 1000;
@@ -189,6 +217,41 @@ client.on('messageCreate', async message => {
     const jugadores = p.jugadores.map(id => `<@${id}>`).join(', ');
     enviarEmbed(message.channel, `📁 Partida #${p.id}`, `Modo: ${p.modo}\nJugadores: ${jugadores}`);
   }
+
+  if (comando === 'cancel') {
+  if (!message.member.roles.cache.has(MOD_ROLE_ID)) return;
+  const id = args[0];
+  const index = partidas.findIndex(p => p.id == id);
+  if (index === -1) return enviarEmbed(message.channel, '❌ Error', 'Partida no encontrada.');
+
+  partidas.splice(index, 1);
+  enviarEmbed(message.channel, '🚫 Partida cancelada', `Se canceló la partida #${id}`);
+}
+
+if (comando === 'forzar') {
+  if (!message.member.roles.cache.has(MOD_ROLE_ID)) return;
+  const modo = args[0];
+  const mencionados = message.mentions.users.map(u => u.id);
+
+  const requeridos = modo === '1v1' ? 2 : modo === '2v2' ? 4 : 6;
+  if (!['1v1', '2v2', '3v3'].includes(modo)) return enviarEmbed(message.channel, '❌ Error', 'Modo inválido.');
+  if (mencionados.length !== requeridos) return enviarEmbed(message.channel, '❌ Error', `Debes mencionar exactamente ${requeridos} jugadores.`);
+
+  partidas.push({ id: partidaId, modo, jugadores: mencionados });
+  const link = await crearSala(modo);
+  partidas[partidas.length - 1].link = link;
+  fs.writeFileSync('partidaId.json', `${++partidaId}`);
+
+  mencionados.forEach(uid => client.users.send(uid, `🎮 Sala ${modo} (Partida #${partidaId - 1}): ${link}`));
+  enviarEmbed(message.channel, '🔥 Partida forzada', `Modo: ${modo}\nJugadores: ${mencionados.map(id => `<@${id}>`).join(', ')}\n🔗 Link: ${link}`);
+}
+
+if (comando === 'r') {
+  const ultima = partidas[partidas.length - 1];
+  if (!ultima) return enviarEmbed(message.channel, '⚠️ Sin historial', 'No hay partidas recientes.');
+  enviarEmbed(message.channel, `🔄 Última sala`, `Modo: ${ultima.modo}\nJugadores: ${ultima.jugadores.map(id => `<@${id}>`).join(', ')}\n🔗 Link: ${ultima.link}`);
+}
+
 
   // =shuffle id -> mezclar capitanes
   if (comando === 'shuffle') {
