@@ -1,5 +1,5 @@
-const puppeteer = require('puppeteer');
-
+const chromium = require('chrome-aws-lambda');
+const puppeteer = require('puppeteer-core');
 const { delay } = require('./util');
 
 async function crearSala(modo) {
@@ -9,14 +9,11 @@ async function crearSala(modo) {
     console.log(`🔄 Intento ${intento}: Creando sala para modo ${modo}`);
 
     const browser = await puppeteer.launch({
-  headless: true,
-  args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  userDataDir: './perfil_chromium',
-  defaultViewport: { width: 1366, height: 768 },
-});
-
-
-
+      args: chromium.args,
+      executablePath: await chromium.executablePath || '/usr/bin/chromium-browser',
+      headless: chromium.headless,
+      defaultViewport: { width: 1366, height: 768 },
+    });
 
     try {
       const page = await browser.newPage();
@@ -58,23 +55,19 @@ async function crearSala(modo) {
       await delay(1500);
 
       // Buscar mapa Castle
-      // Buscar el input y escribir "Castle"
-      await page.click('#map-search'); // Asegúrate de que este sea el input correcto
+      await page.click('#map-search');
       await page.keyboard.type('Castle');
-      await page.waitForTimeout(1500); // Espera a que aparezcan los resultados
-
-      // Esperar a que aparezca el <li> correcto
+      await page.waitForTimeout(1500);
       await page.waitForSelector('li.text_blue5.font-nunito', { timeout: 5000 });
 
-      // Buscar y hacer clic en el <li> que contenga exactamente "Castle"
       const opciones = await page.$$('li.text_blue5.font-nunito');
       for (const opcion of opciones) {
-      const texto = await opcion.evaluate(el => el.textContent.trim());
-      if (texto === 'Castle') {
-      await opcion.click();
-      break;
+        const texto = await opcion.evaluate(el => el.textContent.trim());
+        if (texto === 'Castle') {
+          await opcion.click();
+          break;
+        }
       }
-     }
 
       console.log('🏰 Mapa Castle seleccionado');
       await delay(1500);
@@ -88,7 +81,7 @@ async function crearSala(modo) {
       console.log('✅ Botón Crear Juego clickeado');
       await delay(8000);
 
-      // Extraer código del <h1>
+      // Extraer código
       console.log('📋 Buscando código en <h1>...');
       const code = await page.evaluate(() => {
         const h1 = document.querySelector('h1.ss_marginleft');
@@ -98,7 +91,7 @@ async function crearSala(modo) {
       if (code) {
         const finalLink = `https://shellshock.io/#${code}`;
         console.log('✅ Enlace obtenido desde <h1>:', finalLink);
-        setTimeout(() => browser.close(), 10 * 60 * 1000); // Cierra en 10 minutos
+        setTimeout(() => browser.close(), 10 * 60 * 1000);
         return finalLink;
       }
 
