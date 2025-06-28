@@ -12,7 +12,7 @@ async function crearSala(modo) {
   headless: true,
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
   userDataDir: './perfil_chromium',
-  defaultViewport: { width: 1366, height: 768 }
+  defaultViewport: { width: 1366, height: 768 },
 });
 
 
