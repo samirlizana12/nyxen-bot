@@ -38,8 +38,11 @@ function actualizarNick(member, elo) {
 }
 
 client.on('messageCreate', async message => {
-  if (!message.content.startsWith(PREFIX) || message.author.bot) return;
-  const [comando, ...args] = message.content.slice(PREFIX.length).trim().split(/\s+/);
+  try {
+    console.log(`📥 Comando recibido: ${message.content}`);
+    
+    if (!message.content.startsWith(PREFIX) || message.author.bot) return;
+    const [comando, ...args] = message.content.slice(PREFIX.length).trim().split(/\s+/);
 
   if (['1v1', '2v2', '3v3'].includes(message.channel.name)) {
   if (comando === 'j') {
@@ -329,6 +332,10 @@ if (comando === 'r') {
   enviarEmbed(message.channel, '📋 Selección en curso', `🎖 Capitanes: <@${capitan1}> vs <@${capitan2}>\n👥 Jugadores disponibles:\n${lista}\n\n🎯 Turno de <@${seleccionando[partida.id]}>`);
 }
 
+  } catch (err) {
+    console.error("❌ Error ejecutando comando:", err);
+    message.channel.send('Hubo un error al ejecutar el comando. Revisa los logs.');
+  }
 });
 
 client.once('ready', () => {
