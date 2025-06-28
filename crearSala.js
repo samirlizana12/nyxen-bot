@@ -9,11 +9,12 @@ async function crearSala(modo) {
     console.log(`🔄 Intento ${intento}: Creando sala para modo ${modo}`);
 
     const browser = await puppeteer.launch({
-      args: chromium.args,
-      executablePath: await chromium.executablePath || '/usr/bin/chromium-browser',
-      headless: chromium.headless,
-      defaultViewport: { width: 1366, height: 768 },
-    });
+  args: chromium.args,
+  executablePath: await chromium.executablePath, // ✅ solo esto, sin fallback
+  headless: chromium.headless,
+  defaultViewport: { width: 1366, height: 768 },
+});
+
 
     try {
       const page = await browser.newPage();
