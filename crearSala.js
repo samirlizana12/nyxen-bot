@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+
 const { delay } = require('./util');
 
 async function crearSala(modo) {
