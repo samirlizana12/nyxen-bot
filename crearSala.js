@@ -9,12 +9,16 @@ async function crearSala(modo) {
   for (let intento = 1; intento <= intentosMaximos; intento++) {
     console.log(`🔄 Intento ${intento}: Creando sala para modo ${modo}`);
 
-    const browser = await puppeteer.launch({
-      args: chromium.args,
-      executablePath: await chromium.executablePath || '/usr/bin/chromium-browser',
-      headless: chromium.headless,
-      defaultViewport: { width: 1366, height: 768 },
-    });
+    const executablePath = await chromium.executablePath;
+
+const browser = await puppeteer.launch({
+  args: chromium.args,
+  executablePath,
+  headless: chromium.headless,
+  defaultViewport: { width: 1366, height: 768 },
+});
+
+
 
     // resto del código...
 
