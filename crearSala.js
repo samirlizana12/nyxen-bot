@@ -11,10 +11,11 @@ async function crearSala(modo) {
     const browser = await puppeteer.launch({
   headless: true,
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/opt/render/.cache/puppeteer/chrome/linux-138.0.7204.49/chrome',
   userDataDir: './perfil_chromium',
-  defaultViewport: { width: 1366, height: 768 },
+  defaultViewport: { width: 1366, height: 768 }
 });
+
+
 
 
     try {
