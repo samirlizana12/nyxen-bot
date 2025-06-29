@@ -1,3 +1,21 @@
-node_modules
+# Dependencias
+node_modules/
+
+# Entorno
 .env
+
+# Archivos del navegador o Puppeteer
 perfil_chromium/
+.chromium-browser/
+.chromium/
+.cache/
+puppeteer_cache/
+
+# Archivos del sistema o editores
+.DS_Store
+*.log
+
+# Archivos de entorno de Replit (si usas)
+.replit
+.idea/
+.vscode/
