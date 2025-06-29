@@ -6,6 +6,7 @@ const crearSala = require('./crearSala');
 const { cargarElo, guardarElo, obtenerElo, actualizarNombre, estadisticas, actualizarStats, elo } = require('./elo');
 const { delay, formatearNombre, obtenerJugadoresOrdenados } = require('./util');
 
+
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
 });
